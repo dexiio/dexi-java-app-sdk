@@ -19,24 +19,17 @@ public class DexiAuth {
 
     private final String access;
 
-    private final Type type;
-
-    public static DexiAuth from(String accountId, String secret, Type type) {
-        return new DexiAuth(accountId, secret, type);
+    public static DexiAuth from(String accountId, String secret) {
+        return new DexiAuth(accountId, secret);
     }
 
-    public DexiAuth(String accountId, String secret, Type type) {
+    public DexiAuth(String accountId, String secret) {
         this.accountId = accountId;
         this.access = calculateAccess(accountId, secret);
-        this.type = type;
     }
 
     public String getAccountId() {
         return accountId;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public String getAccess() {
@@ -66,9 +59,4 @@ public class DexiAuth {
         return sb.toString();
     }
 
-
-    public enum Type {
-        ACCOUNT,
-        APP
-    }
 }

@@ -1,6 +1,9 @@
 package io.dexi.client;
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import okhttp3.OkHttpClient;
@@ -14,11 +17,18 @@ import java.util.concurrent.TimeUnit;
 public class DexiClientFactory {
     public static final String DEFAULT_BASE_URL = "https://api.dexi.io/";
 
+    /**
+     * Tell dexi that we're behaving as an app
+     */
+    public static final String AUTH_TYPE = "APP";
+
 
     private final Cache<String, DexiClient> clientCache = CacheBuilder.newBuilder()
             .maximumSize(10)
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private final DexiAuth auth;
 
@@ -31,6 +41,15 @@ public class DexiClientFactory {
     public DexiClientFactory(String baseUrl, DexiAuth auth) {
         this.baseUrl = baseUrl;
         this.auth = auth;
+
+        setupObjectMapper();
+    }
+
+    protected void setupObjectMapper() {
+        objectMapper.findAndRegisterModules();
+        objectMapper.disable(SerializationFeature.WRITE_DATE_TIMESTAMPS_AS_NANOSECONDS);
+        objectMapper.disable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     public DexiClient create(final String activationId) {
@@ -48,9 +67,11 @@ public class DexiClientFactory {
 
         private final String activationId;
 
+        private final Retrofit retrofit;
+
         private final DexiFileClient fileClient;
 
-        private final Retrofit retrofit;
+        private final DexiAppClient appClient;
 
         private DexiClient(String activationId) {
             this.activationId = activationId;
@@ -58,6 +79,8 @@ public class DexiClientFactory {
             this.retrofit = buildRetrofit(auth, baseUrl);
 
             this.fileClient = new DexiFileClient(retrofit);
+
+            this.appClient = new DexiAppClient(objectMapper, retrofit);
         }
 
 
@@ -68,6 +91,11 @@ public class DexiClientFactory {
          */
         public DexiFileClient files() {
             return fileClient;
+        }
+
+
+        public DexiAppClient apps() {
+            return appClient;
         }
 
         /**
@@ -91,7 +119,7 @@ public class DexiClientFactory {
         protected Retrofit buildRetrofit(final DexiAuth auth, String baseUrl) {
             return new Retrofit.Builder()
                     .baseUrl(baseUrl)
-                    .addConverterFactory(JacksonConverterFactory.create())
+                    .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                     .client(buildClient(auth))
                     .build();
         }
@@ -109,7 +137,7 @@ public class DexiClientFactory {
 
                 Request request = original.newBuilder()
                         .header("User-Agent", DexiAuth.USER_AGENT)
-                        .header(DexiAuth.HEADER_AUTH_TYPE, auth.getType().name())
+                        .header(DexiAuth.HEADER_AUTH_TYPE, AUTH_TYPE)
                         .header(DexiAuth.HEADER_ACCOUNT, auth.getAccountId())
                         .header(DexiAuth.HEADER_ACCESS, auth.getAccess())
                         .header(DexiAuth.HEADER_ACTIVATION, activationId)
