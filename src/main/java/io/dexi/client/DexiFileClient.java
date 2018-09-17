@@ -25,7 +25,7 @@ public class DexiFileClient {
 
     private final RestClient restClient;
 
-    public DexiFileClient(Retrofit retrofit) {
+    DexiFileClient(Retrofit retrofit) {
         restClient = retrofit.create(RestClient.class);
     }
 

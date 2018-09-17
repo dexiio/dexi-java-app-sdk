@@ -18,7 +18,7 @@ public class DexiAppClient {
 
     private final RestClient restClient;
 
-    public DexiAppClient(ObjectMapper objectMapper, Retrofit retrofit) {
+    DexiAppClient(ObjectMapper objectMapper, Retrofit retrofit) {
         restClient = retrofit.create(RestClient.class);
         this.objectMapper = objectMapper;
     }

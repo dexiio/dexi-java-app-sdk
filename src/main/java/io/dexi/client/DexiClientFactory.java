@@ -23,16 +23,16 @@ public class DexiClientFactory {
     public static final String AUTH_TYPE = "APP";
 
 
-    private final Cache<String, DexiClient> clientCache = CacheBuilder.newBuilder()
+    protected final Cache<String, DexiClient> clientCache = CacheBuilder.newBuilder()
             .maximumSize(10)
             .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    protected final ObjectMapper objectMapper = new ObjectMapper();
 
-    private final DexiAuth auth;
+    protected final DexiAuth auth;
 
-    private final String baseUrl;
+    protected final String baseUrl;
 
     public DexiClientFactory(DexiAuth auth) {
         this(DEFAULT_BASE_URL, auth);
@@ -65,15 +65,15 @@ public class DexiClientFactory {
 
     public class DexiClient {
 
-        private final String activationId;
+        protected final String activationId;
 
-        private final Retrofit retrofit;
+        protected final Retrofit retrofit;
 
-        private final DexiFileClient fileClient;
+        protected final DexiFileClient fileClient;
 
-        private final DexiAppClient appClient;
+        protected final DexiAppClient appClient;
 
-        private DexiClient(String activationId) {
+        protected DexiClient(String activationId) {
             this.activationId = activationId;
 
             this.retrofit = buildRetrofit(auth, baseUrl);

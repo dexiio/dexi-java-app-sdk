@@ -7,6 +7,8 @@ import java.security.NoSuchAlgorithmException;
 public class DexiAuth {
     public static final String HEADER_ACTIVATION    = "X-DexiIO-Activation";
 
+    public static final String HEADER_COMPONENT     = "X-DexiIO-Component";
+
     public static final String HEADER_AUTH_TYPE     = "X-DexiIO-AuthType";
 
     public static final String HEADER_ACCESS        = "X-DexiIO-Access";
