@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.dexi.service.DexiPayloadHeaders;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -26,6 +28,11 @@ public class DexiClientFactory {
     protected final Cache<String, DexiClient> clientCache = CacheBuilder.newBuilder()
             .maximumSize(10)
             .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build();
+
+    private Cache<String, Object> activationConfigCache = CacheBuilder.newBuilder()
+            .maximumSize(50)
+            .expireAfterWrite(30, TimeUnit.SECONDS)
             .build();
 
     protected final ObjectMapper objectMapper = new ObjectMapper();
@@ -62,6 +69,37 @@ public class DexiClientFactory {
         }
     }
 
+    public  <T> T getActivationConfig(String activationId, Class<T> activationClass) throws DexiClientException {
+        try {
+            assert activationId != null && !activationId.isEmpty();
+
+            final T activationConfig = (T) activationConfigCache.get(activationId,
+                () -> create(activationId).apps().getActivationConfig(activationId, activationClass)
+            );
+
+            if (activationConfig == null) {
+                return null;
+            }
+
+            return activationConfig;
+        } catch (Exception e) {
+            throw new DexiClientException("Could not get configuration for app activation", e);
+        }
+    }
+
+    public <T> T getConfiguration(HttpRequest request, Class<T> clz) throws IOException {
+
+        final String json = request.getHeader(DexiPayloadHeaders.CONFIGURATION);
+        if (json == null || json.trim().isEmpty()) {
+            return null;
+        }
+
+        return objectMapper.readValue(json, clz);
+    }
+
+    public interface HttpRequest {
+        public String getHeader(String headerName);
+    }
 
     public class DexiClient {
 
