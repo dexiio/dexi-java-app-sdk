@@ -58,7 +58,7 @@ X-DexiIO-Config     : Component configuration serialized to JSON
 
 Below you'll find a list of the different types of requests Dexi sends to your app: All payloads are send as JSON
 
-**App: Validate Configuration**
+#### App: Validate Configuration
 Called whenever an app activation needs to be validated. Usually while user is creating / updating an activation.
 
 ```
@@ -75,7 +75,7 @@ Output: Nothing if succesfull. Send error object to provide proper error feedbac
 ```
 
 
-**App: Activation Endpoint**
+#### App: Activation Endpoint
 Called whenever an app was successfully activated.
 
 ```
@@ -88,7 +88,7 @@ The configuration values of the app
 Output: None
 ```
 
-**App: Deactivation Endpoint**
+#### App: Deactivation Endpoint
 Called whenever an app was successfully deactivated.
 
 ```
@@ -100,7 +100,7 @@ Payload: None
 Output: None
 ```
 
-**Component: Configuration Validation Endpoint**
+#### Component: Configuration Validation Endpoint
 Called whenever a component configuration needs validation. Usually while creating / updating uses of the apps components.
 
 ```
@@ -117,7 +117,7 @@ Output: Nothing if succesfull. Send error object to provide proper error feedbac
 
 ```
 
-**Component: Dynamic Input Schema Endpoint**
+#### Component: Dynamic Input Schema Endpoint
 Called whenever the system needs to resolve the input schema for a component. 
 
 ```
@@ -133,7 +133,7 @@ Output: Schema (See class)
 ```
 
 
-**Component: Dynamic Output Schema Endpoint**
+#### Component: Dynamic Output Schema Endpoint
 Called whenever the system needs to resolve the output schema for a component. 
 
 ```
@@ -149,7 +149,7 @@ Output: Schema (See class)
 ```
 
 
-**Component: Dynamic Configuration Schema Endpoint**
+#### Component: Dynamic Configuration Schema Endpoint
 Called whenever the system needs to resolve the configuration schema for a component. 
 
 ```
@@ -164,7 +164,7 @@ Output: Schema (See class)
 
 ```
 
-**Component: Data Storage Endpoint**
+#### Component: Data Storage Endpoint
 Invocation request made specificly for the ```data-storage``` component type
 
 ```
@@ -183,7 +183,7 @@ Output: Data according the output schema (or nothing of no output schema defined
 
 ```
 
-**Component: Data Source Endpoint**
+#### Component: Data Source Endpoint
 Invocation request made specificly for the ```data-source``` component type
 
 ```
@@ -199,7 +199,7 @@ Output: Data according the output schema (or nothing of no output schema defined
 
 ```
 
-**Component: Data Filter Endpoint**
+#### Component: Data Filter Endpoint
 Invocation request made specificly for the ```data-filter``` component type
 
 ```
@@ -215,7 +215,7 @@ Output: Data according the output schema (or nothing of no output schema defined
 
 ```
 
-**Component: File Storage Endpoint**
+#### Component: File Storage Endpoint
 Invocation request made specificly for the ```file-storage``` component type
 
 ```
@@ -232,7 +232,7 @@ Output: Nothing
 
 ```
 
-**Component: File Source Endpoint**
+#### Component: File Source Endpoint
 Invocation request made specificly for the ```file-source``` component type
 
 ```
@@ -248,7 +248,7 @@ Output: Stream
 Should output the raw file stream
 ```
 
-**Error handling**
+### Error handling
 All endpoints must return a status code between 400-499 for configuration issues and 500-599 for internal server issues. 
 To provide further information for the user as to what went wrong provide an error object in the output as follows:
 ```
