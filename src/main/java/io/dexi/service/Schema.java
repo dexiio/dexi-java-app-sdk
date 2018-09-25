@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * This class provides the structure needed to communicate data and configuration structure to dexi.
+ */
 public class Schema extends HashMap<String, Schema.Field> {
 
     public static class Field {

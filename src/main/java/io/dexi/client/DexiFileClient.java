@@ -17,11 +17,9 @@ import java.util.regex.Pattern;
 
 public class DexiFileClient {
 
-    private static final String UUID_REGEX_PATTERN = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-
     // Format: FILE:<mimetype>;<size>;<fileId>
     private static final Pattern DEXI_FILE_ID_PATTERN = Pattern.compile("^(FILE:)([^;]*);" +
-            "([^;]*);(" + UUID_REGEX_PATTERN + ")$");
+            "([^;]*);(.+)$");
 
     private final RestClient restClient;
 
