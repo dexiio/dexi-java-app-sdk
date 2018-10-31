@@ -1,12 +1,10 @@
 package io.dexi.client;
 
-import com.sun.istack.internal.Nullable;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.http.GET;
-import retrofit2.http.Header;
 import retrofit2.http.Path;
 
 import java.io.IOException;
@@ -38,7 +36,7 @@ public class DexiFileClient {
     /**
      * Gets file stream field from dexi file field value. Format is: FILE:<mimetype>;<size>;<fileId>
      */
-    public @Nullable FileHandle getFileFromFieldValue(String value) throws IOException {
+    public FileHandle getFileFromFieldValue(String value) throws IOException {
         if (!isFileFieldValue(value)) {
             return null;
         }
