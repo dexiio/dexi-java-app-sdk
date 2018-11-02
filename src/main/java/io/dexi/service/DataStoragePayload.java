@@ -1,7 +1,7 @@
 package io.dexi.service;
 
 
-public class DataStoragePayload<T> {
+public class DataStoragePayload<T> extends DynamicSchemaPayload {
 
     private T config;
 
