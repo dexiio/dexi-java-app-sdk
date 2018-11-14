@@ -7,6 +7,9 @@ import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParamet
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.Map;
@@ -81,22 +84,25 @@ public class Config {
         }
     }
 
-    private static <T extends FileBasedConfiguration> Configuration getConfigurationFile(String uri, Class<T> filedBasedClazz) throws ConfigurationException {
+    private static <T extends FileBasedConfiguration> Configuration getConfigurationFile(String fileLocation, Class<T> filedBasedClazz) throws ConfigurationException, URISyntaxException, MalformedURLException {
         T configuration = null;
 
         Parameters parameters = new Parameters();
         PropertiesBuilderParameters properties = parameters.properties();
-
         // TODO: use ReloadingFileBasedConfigurationBuilder
         FileBasedConfigurationBuilder<T> builder = new FileBasedConfigurationBuilder<>(filedBasedClazz);
-        URL url = Config.class.getResource(uri);
 
-        if (uri.startsWith("http")) {
-            builder = builder.configure(properties.setURL(url));
+        URI uri = new URI(fileLocation);
+        String scheme = uri.getScheme();
+        if ("http".equalsIgnoreCase(scheme)) {
+            builder = builder.configure(properties.setURL(uri.toURL()));
             configuration = builder.getConfiguration();
-        } else if (url != null) {
-            builder = builder.configure(properties.setFileName(url.getFile()));
-            configuration = builder.getConfiguration();
+        } else {
+            URL localFileURL = Config.class.getResource(fileLocation);
+            if (localFileURL != null) {
+                builder = builder.configure(properties.setFileName(localFileURL.getFile()));
+                configuration = builder.getConfiguration();
+            }
         }
 
         return configuration;
@@ -117,7 +123,7 @@ public class Config {
         }
     }
 
-    public static void load(String appName) throws ConfigurationException {
+    public static void load(String appName) throws ConfigurationException, URISyntaxException, MalformedURLException {
         String dexiAppConfigUrl = System.getenv(DEXI_APP_CONFIG_URL);
         if (StringUtils.isEmpty(dexiAppConfigUrl)) {
             dexiAppConfigUrl = System.getProperty(DEXI_APP_CONFIG_URL);
