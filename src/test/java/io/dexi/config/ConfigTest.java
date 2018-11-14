@@ -27,8 +27,11 @@ public class ConfigTest {
     }
 
     @Test
-    public void testReadingLocalFilesAndFileFromURL() throws ConfigurationException {
-        // TODO: implement
+    public void testReadingLocalFilesAndFileFromURL() throws ConfigurationException, MalformedURLException, URISyntaxException {
+        System.setProperty(Config.DEXI_APP_CONFIG_URL, "http://config.dexi.io:1080/dexi-config/test/ini/apps/app-service-s3.yml");
+        Config.load("/test-app");
+        Properties properties = Config.getProperties();
+        assertEquals(6, properties.keySet().size());
     }
 
 }

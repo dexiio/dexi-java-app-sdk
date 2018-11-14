@@ -84,6 +84,7 @@ public class Config {
         }
     }
 
+    // TODO: for non-tests, should only look in ~/.dexi/
     private static <T extends FileBasedConfiguration> Configuration getConfigurationFile(String fileLocation, Class<T> filedBasedClazz) throws ConfigurationException, URISyntaxException, MalformedURLException {
         T configuration = null;
 
