@@ -57,64 +57,6 @@ public class Config {
 
     private static Properties properties = new Properties();
 
-    /*
-    private static File findConfigurationFile(String fileName) {
-        String fullFileName = System.getProperty("user.home") + "/.dexi/" + fileName;
-        File configurationFile = new File(fullFileName);
-        if (configurationFile.exists()) {
-            return configurationFile;
-        }
-
-        throw new RuntimeException("Could not find configuration file: " + fileName);
-    }
-    */
-
-    /*
-    private static String resolveEnvironmentVariables(final String value) {
-        String[] tokens = value.split("%");
-        if (tokens.length == 1) {
-            return value;
-        }
-
-        // iterate over the tokens
-        String result = new String(value);
-        for (String token : tokens) {
-            if (token == null || token.trim().length() == 0) {
-                continue;
-            }
-
-            String envValue = System.getenv(token);
-            if (envValue == null) {
-                continue;
-            }
-
-            result = result.replaceAll("%" + token + "%", envValue);
-        }
-
-        return result;
-    }
-    */
-
-    /*
-    private static void readIniConfiguration(HierarchicalINIConfiguration configuration) {
-        if (configuration != null) {
-            for (String section : configuration.getSections()) {
-                Iterator keys = configuration.getSection(section).getKeys();
-                while (keys.hasNext()) {
-                    String key = (String) keys.next();
-                    String value = configuration.getSection(section).getString(key);
-
-                    value = resolveEnvironmentVariables(value);
-
-                    properties.setProperty(
-                            String.format("%s.%s", section, key),
-                            value);
-                }
-            }
-        }
-    }
-    */
-
     private static void readEnvironment() {
         Map<String, String> env = System.getenv();
         Set<String> envKeys = env.keySet();
@@ -160,8 +102,6 @@ public class Config {
             Iterator<String> keys = configuration.getKeys();
             while (keys.hasNext()) {
                 String keyWithSection = keys.next();
-                //String section = keyWithSection.substring(0, keyWithSection.indexOf("."));
-                //String key = keyWithSection.substring(keyWithSection.indexOf(".") + 1);
 
                 String existingValue = properties.getProperty(keyWithSection);
                 if (existingValue == null) {
