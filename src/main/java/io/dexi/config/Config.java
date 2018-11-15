@@ -23,36 +23,40 @@ import java.util.Set;
  *  This class supports reading a "hierarchical" configuration file with sections like:
  *
  *  <b>YAML example</b>
- *  <code>
+ *  <pre>
+ *  {@code
  *     dexi:
  *       baseUrl: http://localhost:3000/api/
  *       apiKey: super-secret-key
- *  </code>
+ *  }
+ *  </pre>
  *
  *  <b>JSON example</b>
- *  <code>
+ *  <pre>
+ *  {@code
  *      {
  *          "dexi": {
  *              "baseUrl": "http://localhost:3000/api/",
  *              "apiKey": "super-secret-key"
  *          }
  *      }
- *  </code>
+ *  }
+ *  </pre>
  *
  *  The file can be read from a local disk or from a URL. The class also supports reading environment variables whose
  *  names start with "DEXI_APP_".
  *
  *  Configuration is read in the following order:
  *  <ol>
- *      <li>A local configuration file as specified by the "LOCAL_CONFIG_FILE" parameter. The default is
- *          "~/.dexi/my-app.yml".
+ *      <li>A local configuration file as specified by the {@code localConfigFile} parameter. The default is
+ *          {@code ~/.dexi/my-app.yml}.
  *          <ul>
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *          </ul>
  *      </li>
- *      <li>If an environment variable or system property named "DEXI_APP_CONFIG_URL_YML" is set, read a YAML (.yml)
+ *      <li>If an environment variable or system property named {@code DEXI_APP_CONFIG_URL_YML} is set, read a YAML (.yml)
  *          file from the specified URL.</li>
- *      <li>Read any "DEXI_APP_" environment variable. The format is: "DEXI_APP_&lt;section>_&lt;key> = &lt;value>".</li>
+ *      <li>Read any {@code DEXI_APP_} environment variable. The format is: {@code DEXI_APP_&lt;section>_&lt;key> = &lt;value>}.</li>
  *  </ol>
  *
  *  Values for duplicate keys within sections are overwritten by later keys.
@@ -62,9 +66,9 @@ public class Config {
 
     public static final String DEXI_APP_CONFIG_URL = "DEXI_APP_CONFIG_URL";
 
-    private static String LOCAL_CONFIG_FILE = System.getProperty("user.home") + "/.dexi/my-app.yml";
-    private static final String ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
+    private static final String DEXI_APP_ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
 
+    private static String localConfigFile = System.getProperty("user.home") + "/.dexi/my-app.yml";
     private static Properties properties = new Properties();
 
     private static void readEnvironment() {
@@ -72,7 +76,7 @@ public class Config {
         Set<String> envKeys = env.keySet();
         if (envKeys.size() > 0) {
             for (String envKey : envKeys) {
-                if (envKey.startsWith(ENVIRONMENT_VARIABLE_PREFIX) && !envKey.startsWith(DEXI_APP_CONFIG_URL)) {
+                if (envKey.startsWith(DEXI_APP_ENVIRONMENT_VARIABLE_PREFIX) && !envKey.startsWith(DEXI_APP_CONFIG_URL)) {
                     String envKeyWithoutPrefix = envKey.substring(5).toLowerCase();
                     if (envKeyWithoutPrefix.indexOf("_") == -1) {
                         continue;
@@ -89,7 +93,6 @@ public class Config {
         }
     }
 
-    // TODO: for non-tests, should only look in ~/.dexi/
     private static <T extends FileBasedConfiguration> Configuration getConfigurationFile(String fileLocation, Class<T> filedBasedClazz) throws ConfigurationException, URISyntaxException, MalformedURLException {
         T configuration = null;
 
@@ -141,10 +144,10 @@ public class Config {
     }
 
     private static void readLocalConfiguration() throws MalformedURLException, ConfigurationException, URISyntaxException {
-        String extension = LOCAL_CONFIG_FILE.substring(LOCAL_CONFIG_FILE.lastIndexOf(".") + 1);
+        String fileExtension = localConfigFile.substring(localConfigFile.lastIndexOf(".") + 1);
 
         Class<? extends FileBasedConfiguration> configurationClass;
-        switch (extension) {
+        switch (fileExtension) {
             case "yml":
                 configurationClass = YAMLConfiguration.class;
                 break;
@@ -158,10 +161,10 @@ public class Config {
                 configurationClass = YAMLConfiguration.class;
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported file extension " + extension);
+                throw new IllegalArgumentException("Unsupported file extension " + fileExtension);
         }
 
-        Configuration ymlConfigurationLocal = getConfigurationFile(LOCAL_CONFIG_FILE, configurationClass);
+        Configuration ymlConfigurationLocal = getConfigurationFile(localConfigFile, configurationClass);
         addConfigurationToProperties(ymlConfigurationLocal);
     }
 
@@ -178,7 +181,7 @@ public class Config {
     }
 
     public static void setLocalConfigFile(String localConfigFile) {
-        LOCAL_CONFIG_FILE = localConfigFile;
+        Config.localConfigFile = localConfigFile;
     }
 
 }
