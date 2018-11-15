@@ -19,23 +19,32 @@ public class ConfigTest {
 
     @Test
     public void testReadingLocalFiles() throws ConfigurationException, URISyntaxException, MalformedURLException {
-        Config.load("/test-app");
+        Config.setLocalConfigFile("/test-app.yml");
+
+        Config.load();
+
         Properties properties = Config.getProperties();
         assertEquals(3, properties.keySet().size());
     }
 
     @Test
     public void testReadingFileFromURL() throws ConfigurationException, URISyntaxException, MalformedURLException {
+        Config.setLocalConfigFile("/non-existing-local-config-file.json");
         System.setProperty(Config.DEXI_APP_CONFIG_URL, "http://config.dexi.io:1080/dexi-config/test/ini/apps/app-service-s3.yml");
-        Config.load("/app-name-with-no-local-config-files");
+
+        Config.load();
+
         Properties properties = Config.getProperties();
         assertEquals(3, properties.keySet().size());
     }
 
     @Test
     public void testReadingLocalFilesAndFileFromURL() throws ConfigurationException, MalformedURLException, URISyntaxException {
+        Config.setLocalConfigFile("/test-app.json");
         System.setProperty(Config.DEXI_APP_CONFIG_URL, "http://config.dexi.io:1080/dexi-config/test/ini/apps/app-service-s3.yml");
-        Config.load("/test-app");
+
+        Config.load();
+
         Properties properties = Config.getProperties();
         assertEquals(6, properties.keySet().size());
     }

@@ -1,6 +1,8 @@
 package io.dexi.config;
 
-import org.apache.commons.configuration2.*;
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.FileBasedConfiguration;
+import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
@@ -17,7 +19,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- *  This class supports reading "hierarchical" configuration files with sections like:
+ *  This class supports reading a "hierarchical" configuration file with sections like:
  *
  *  <b>YAML example</b>
  *  <code>
@@ -36,18 +38,20 @@ import java.util.Set;
  *      }
  *  </code>
  *
- *  It also supports reading environment variables with the following format: "DEXI_APP_&lt;section>_&lt;key> = &lt;value>".
+ *  The file can be read from a local disk or from a URL. The class also supports reading environment variables whose
+ *  names start with "DEXI_APP_".
  *
  *  Configuration is read in the following order:
  *  <ol>
- *      <li>On the local disk, read a file named "dexi.&lt;app-name>" placed in "~/.dexi"
+ *      <li>A local configuration file as specified by the "LOCAL_CONFIG_FILE" parameter. The default is
+ *          "~/.dexi/my-app.yml".
  *          <ul>
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *          </ul>
  *      </li>
  *      <li>If an environment variable or system property named "DEXI_APP_CONFIG_URL_YML" is set, read a YAML (.yml)
- *      file from the specified URL.</li>
- *      <li>Read any "DEXI_APP_" environment variable</li>
+ *          file from the specified URL.</li>
+ *      <li>Read any "DEXI_APP_" environment variable. The format is: "DEXI_APP_&lt;section>_&lt;key> = &lt;value>".</li>
  *  </ol>
  *
  *  Values for duplicate keys within sections are overwritten by later keys.
@@ -57,6 +61,7 @@ public class Config {
 
     public static final String DEXI_APP_CONFIG_URL = "DEXI_APP_CONFIG_URL";
 
+    private static String LOCAL_CONFIG_FILE = System.getProperty("user.home") + "/.dexi/my-app.yml";
     private static final String ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
 
     private static Properties properties = new Properties();
@@ -135,22 +140,33 @@ public class Config {
         }
     }
 
-    private static void readLocalConfiguration(String appName) throws MalformedURLException, ConfigurationException, URISyntaxException {
-        Configuration ymlConfigurationLocal = getConfigurationFile(appName + ".yml", YAMLConfiguration.class);
+    private static void readLocalConfiguration() throws MalformedURLException, ConfigurationException, URISyntaxException {
+        String extension = LOCAL_CONFIG_FILE.substring(LOCAL_CONFIG_FILE.lastIndexOf(".") + 1);
+
+        Class<? extends FileBasedConfiguration> configurationClass;
+        switch (extension) {
+            case "yml":
+                configurationClass = YAMLConfiguration.class;
+                break;
+            case "json":
+                configurationClass = YAMLConfiguration.class;
+                break;
+            case "xml":
+                configurationClass = YAMLConfiguration.class;
+                break;
+            case "ini":
+                configurationClass = YAMLConfiguration.class;
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported file extension " + extension);
+        }
+
+        Configuration ymlConfigurationLocal = getConfigurationFile(LOCAL_CONFIG_FILE, configurationClass);
         addConfigurationToProperties(ymlConfigurationLocal);
-
-        Configuration jsonConfiguration = getConfigurationFile(appName + ".json", JSONConfiguration.class);
-        addConfigurationToProperties(jsonConfiguration);
-
-        Configuration xmlConfiguration = getConfigurationFile(appName + ".xml", XMLConfiguration.class);
-        addConfigurationToProperties(xmlConfiguration);
-
-        Configuration iniConfiguration = getConfigurationFile(appName + ".ini", INIConfiguration.class);
-        addConfigurationToProperties(iniConfiguration);
     }
 
-    public static void load(String appName) throws ConfigurationException, URISyntaxException, MalformedURLException {
-        readLocalConfiguration(appName);
+    public static void load() throws ConfigurationException, URISyntaxException, MalformedURLException {
+        readLocalConfiguration();
 
         getConfigurationFromURL();
 
@@ -159,6 +175,10 @@ public class Config {
 
     public static Properties getProperties() {
         return properties;
+    }
+
+    public static void setLocalConfigFile(String localConfigFile) {
+        LOCAL_CONFIG_FILE = localConfigFile;
     }
 
 }
