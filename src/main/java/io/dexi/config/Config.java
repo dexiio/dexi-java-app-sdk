@@ -48,7 +48,7 @@ import java.util.Set;
  *
  *  Configuration is read in the following order:
  *  <ol>
- *      <li>A local configuration file as specified by the {@code localConfigFile} parameter. The default is
+ *      <li>A local configuration file as specified by the {@code defaultLocalConfigFile} parameter. The default is
  *          {@code ~/.dexi/my-app.yml}.
  *          <ul>
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
@@ -68,7 +68,7 @@ public class Config {
 
     private static final String DEXI_APP_ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
 
-    private static String localConfigFile = System.getProperty("user.home") + "/.dexi/my-app.yml";
+    private static String defaultLocalConfigFile = System.getProperty("user.home") + "/.dexi/my-app.yml";
     private static Properties properties = new Properties();
 
     private static void readEnvironment() {
@@ -144,7 +144,7 @@ public class Config {
     }
 
     private static void readLocalConfiguration() throws MalformedURLException, ConfigurationException, URISyntaxException {
-        String fileExtension = localConfigFile.substring(localConfigFile.lastIndexOf(".") + 1);
+        String fileExtension = defaultLocalConfigFile.substring(defaultLocalConfigFile.lastIndexOf(".") + 1);
 
         Class<? extends FileBasedConfiguration> configurationClass;
         switch (fileExtension) {
@@ -164,7 +164,7 @@ public class Config {
                 throw new IllegalArgumentException("Unsupported file extension " + fileExtension);
         }
 
-        Configuration ymlConfigurationLocal = getConfigurationFile(localConfigFile, configurationClass);
+        Configuration ymlConfigurationLocal = getConfigurationFile(defaultLocalConfigFile, configurationClass);
         addConfigurationToProperties(ymlConfigurationLocal);
     }
 
@@ -181,7 +181,7 @@ public class Config {
     }
 
     public static void setLocalConfigFile(String localConfigFile) {
-        Config.localConfigFile = localConfigFile;
+        Config.defaultLocalConfigFile = localConfigFile;
     }
 
 }
