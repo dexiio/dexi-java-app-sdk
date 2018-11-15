@@ -4,6 +4,7 @@ import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.YAMLConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.ReloadingFileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
@@ -94,8 +95,7 @@ public class Config {
 
         Parameters parameters = new Parameters();
         PropertiesBuilderParameters properties = parameters.properties();
-        // TODO: use ReloadingFileBasedConfigurationBuilder
-        FileBasedConfigurationBuilder<T> builder = new FileBasedConfigurationBuilder<>(filedBasedClazz);
+        FileBasedConfigurationBuilder<T> builder = new ReloadingFileBasedConfigurationBuilder<>(filedBasedClazz);
 
         URI uri = new URI(fileLocation);
         String scheme = uri.getScheme();
