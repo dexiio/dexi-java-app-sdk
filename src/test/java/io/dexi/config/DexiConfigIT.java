@@ -12,7 +12,7 @@ import java.util.Set;
 import static io.dexi.config.DexiConfig.ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX;
 import static org.junit.Assert.assertEquals;
 
-public class ConfigIT {
+public class DexiConfigIT {
 
     @After
     public void clearProperties() {
@@ -20,7 +20,7 @@ public class ConfigIT {
     }
 
     @Test
-    public void testReadingLocalFile() throws ConfigurationException, URISyntaxException, MalformedURLException {
+    public void test_reading_local_file() throws ConfigurationException, URISyntaxException, MalformedURLException {
         System.setProperty(DexiConfig.ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME, "/test-config.yml");
 
         DexiConfig.load();
@@ -30,7 +30,7 @@ public class ConfigIT {
     }
 
     @Test
-    public void testReadingFileFromURL() throws ConfigurationException, URISyntaxException, MalformedURLException {
+    public void test_reading_file_from_url() throws ConfigurationException, URISyntaxException, MalformedURLException {
         System.setProperty(DexiConfig.ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME, "http://config.dexi.io:1080/dexi-config/test/ini/apps/app-service-s3.yml");
 
         DexiConfig.load();
@@ -40,7 +40,7 @@ public class ConfigIT {
     }
 
     @Test
-    public void testDuplicateKeysAreOverwritten() throws ConfigurationException, MalformedURLException, URISyntaxException {
+    public void test_reading_configuration_from_environment_and_that_duplicate_keys_are_overwritten() throws ConfigurationException, MalformedURLException, URISyntaxException {
         System.setProperty(DexiConfig.ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME, "/test-config.json");
 
         String section = "dexi";
