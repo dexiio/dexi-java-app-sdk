@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import io.dexi.config.Config;
 import io.dexi.service.DexiPayloadHeaders;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -17,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class DexiClientFactory {
-    public static final String DEFAULT_BASE_URL = "https://api.dexi.io/";
 
     /**
      * Tell dexi that we're behaving as an app
@@ -41,8 +41,13 @@ public class DexiClientFactory {
 
     protected final String baseUrl;
 
+    public DexiClientFactory() {
+        this.baseUrl = Config.getBaseUrl();
+        this.auth = DexiAuth.from(Config.getAccount(), Config.getApiKey());
+    }
+
     public DexiClientFactory(DexiAuth auth) {
-        this(DEFAULT_BASE_URL, auth);
+        this(Config.getBaseUrl(), auth);
     }
 
     public DexiClientFactory(String baseUrl, DexiAuth auth) {

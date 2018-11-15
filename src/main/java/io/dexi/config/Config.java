@@ -67,8 +67,13 @@ import java.util.Set;
 public class Config {
 
     public static final String DEXI_APP_CONFIG_URL = "DEXI_APP_CONFIG_URL";
+    public static final String DEFAULT_BASE_URL = "https://api.dexi.io/";
 
     private static final String DEXI_APP_ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
+
+    public static final String CONFIG_KEY_BASE_URL = "baseUrl";
+    public static final String CONFIG_KEY_API_KEY = "apiKey";
+    public static final String CONFIG_KEY_ACCOUNT = "account";
 
     private static String defaultLocalConfigFile = System.getProperty("user.home") + "/.dexi/configuration.yml";
     private static Properties properties = new Properties();
@@ -186,4 +191,15 @@ public class Config {
         Config.defaultLocalConfigFile = localConfigFile;
     }
 
+    public static String getBaseUrl() {
+        return properties.getProperty(CONFIG_KEY_BASE_URL, DEFAULT_BASE_URL);
+    }
+
+    public static String getApiKey() {
+        return properties.getProperty(CONFIG_KEY_API_KEY);
+    }
+
+    public static String getAccount() {
+        return properties.getProperty(CONFIG_KEY_ACCOUNT);
+    }
 }
