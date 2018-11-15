@@ -29,6 +29,7 @@ public class DexiConfigIT {
         assertEquals(4, properties.keySet().size());
     }
 
+    // TODO: make URL used in this test publicly available
     @Test
     public void test_reading_file_from_url() throws ConfigurationException, URISyntaxException, MalformedURLException {
         System.setProperty(DexiConfig.ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME, "http://config.dexi.io:1080/dexi-config/test/ini/apps/app-service-s3.yml");

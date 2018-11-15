@@ -197,7 +197,7 @@ public class DexiConfig {
         return urlMatcher.find();
     }
 
-    public static void load() throws ConfigurationException, URISyntaxException, MalformedURLException {
+    public static synchronized void load() throws ConfigurationException, URISyntaxException, MalformedURLException {
         String fileLocation = System.getenv(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
         if (StringUtils.isEmpty(fileLocation)) {
             fileLocation = System.getProperty(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
