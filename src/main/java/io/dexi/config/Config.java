@@ -47,7 +47,7 @@ import java.util.Set;
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *          </ul>
  *      </li>
- *      <li>Read any "DEXI_APP_" environment variables</li>
+ *      <li>Read any "DEXI_APP_" environment variable</li>
  *  </ol>
  *
  *  Configuration is read in the order specified above. Only the last value for a duplicate key within a section is
@@ -124,7 +124,7 @@ public class Config {
         }
     }
 
-    public static void load(String appName) throws ConfigurationException, URISyntaxException, MalformedURLException {
+    private static void getConfigurationFromURL() throws MalformedURLException, ConfigurationException, URISyntaxException {
         String dexiAppConfigUrl = System.getenv(DEXI_APP_CONFIG_URL);
         if (StringUtils.isEmpty(dexiAppConfigUrl)) {
             dexiAppConfigUrl = System.getProperty(DEXI_APP_CONFIG_URL);
@@ -134,7 +134,9 @@ public class Config {
             Configuration ymlConfigurationURL = getConfigurationFile(dexiAppConfigUrl, YAMLConfiguration.class);
             addConfigurationToProperties(ymlConfigurationURL);
         }
+    }
 
+    private static void readLocalConfiguration(String appName) throws MalformedURLException, ConfigurationException, URISyntaxException {
         Configuration ymlConfigurationLocal = getConfigurationFile(appName + ".yml", YAMLConfiguration.class);
         addConfigurationToProperties(ymlConfigurationLocal);
 
@@ -146,6 +148,12 @@ public class Config {
 
         Configuration iniConfiguration = getConfigurationFile(appName + ".ini", INIConfiguration.class);
         addConfigurationToProperties(iniConfiguration);
+    }
+
+    public static void load(String appName) throws ConfigurationException, URISyntaxException, MalformedURLException {
+        getConfigurationFromURL();
+
+        readLocalConfiguration(appName);
 
         readEnvironment();
     }
@@ -153,4 +161,5 @@ public class Config {
     public static Properties getProperties() {
         return properties;
     }
+
 }
