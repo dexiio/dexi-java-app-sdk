@@ -18,12 +18,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *  This class contains functionality for reading a "hierarchical" configuration file containing sections like the
  *  examples below.
  *
- *  Specifically it is possible to get the configuration needed to connect to the Dexi API.
+ *  Specifically it can be used to get the configuration needed to connect to the Dexi API.
  *
  *  <b>YAML example</b>
  *  <pre>
@@ -31,7 +33,7 @@ import java.util.Set;
  *     dexi:
  *       baseUrl: http://localhost:3000/api/
  *       apiKey: super-secret-key
- *       account: dexi-developer-account
+ *       account: dexi-developer-account-id
  *     google:
  *       ...
  *  }
@@ -44,7 +46,7 @@ import java.util.Set;
  *          "dexi": {
  *              "baseUrl": "http://localhost:3000/api/",
  *              "apiKey": "super-secret-key",
- *              "account": "dexi-developer-account"
+ *              "account": "dexi-developer-account-id"
  *          },
  *          "google": {
  *              "...
@@ -58,7 +60,7 @@ import java.util.Set;
  *
  *  Configuration is read as follows:
  *  <ol>
- *      <li>If an environment variable or system property named {@code DEXI_APP_CREDENTIALS_NAME}
+ *      <li>If an environment variable or system property named {@code DEXI_APP_CREDENTIALS}
  *          is set, check its value:
  *          <ul>
  *              <li>If its value is a URL, the configuration file is read from that URL.</li>
@@ -70,10 +72,14 @@ import java.util.Set;
  *                      <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *                  </ul>
  *          </ul>
- *      <li>If {@code DEXI_APP_CREDENTIALS_NAME} is not set, read a default local configuration file in
+ *      <li>If {@code DEXI_APP_CREDENTIALS} is not set, read a default local configuration file in
  *          {@code ~/.dexi/configuration.yml}.</li>
- *      <li>Read any {@code DEXI_APP_} environment variable. The format is:
- *          {@code DEXI_APP_&lt;section>_&lt;key> = &lt;value>}.</li>
+ *      <li>Read any {@code DEXI_APP_} system property or environment variable. The format is:
+ *          {@code DEXI_APP_<section>_<key> = <value>}.
+ *          <ul>
+ *              <li>Example: {@code DEXI_APP_dexi_account = my-other-account}</li>
+ *          </ul>
+ *      </li>
  *  </ol>
  *
  *  Values for duplicate keys within sections are overwritten by later keys.
@@ -81,35 +87,38 @@ import java.util.Set;
  */
 public class DexiConfig {
 
-    public static final String ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME = "DEXI_APP_CREDENTIALS";
     public static final String DEFAULT_BASE_URL = "https://api.dexi.io/";
+    public static final String ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME = "DEXI_APP_CREDENTIALS";
+    public static final String ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX = "DEXI_APP_";
 
     public static final String CONFIG_KEY_BASE_URL = "baseUrl";
-    public static final String CONFIG_KEY_API_KEY = "apiKey";
     public static final String CONFIG_KEY_ACCOUNT = "account";
+    public static final String CONFIG_KEY_API_KEY = "apiKey";
 
-    private static final String ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX = "DEXI_APP_";
-
-    private static String defaultLocalConfigFile = System.getProperty("user.home") + "/.dexi/configuration.yml";
+    private static String DEFAULT_CONFIG_FILE = System.getProperty("user.home") + "/.dexi/configuration.yml";
     private static Properties properties = new Properties();
 
     private static void readEnvironment() {
-        Map<String, String> env = System.getenv();
-        Set<String> envKeys = env.keySet();
-        if (envKeys.size() > 0) {
-            for (String envKey : envKeys) {
-                if (envKey.startsWith(ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX) && !envKey.startsWith(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME)) {
-                    String envKeyWithoutPrefix = envKey.substring(5).toLowerCase();
+        Properties systemProperties = System.getProperties();
+        Map<String, String> environment = System.getenv();
+        systemProperties.putAll(environment);
+
+        Set<Object> keys = systemProperties.keySet();
+        if (keys.size() > 0) {
+            for (Object propertyKey : keys) {
+                String propertyKeyString = String.valueOf(propertyKey);
+                if (propertyKeyString.startsWith(ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX) && !propertyKeyString.startsWith(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME)) {
+                    String envKeyWithoutPrefix = propertyKeyString.substring(ENVIRONMENT_VARIABLE_DEXI_APP_PREFIX.length());
                     if (envKeyWithoutPrefix.indexOf("_") == -1) {
                         continue;
                     }
 
                     String section = envKeyWithoutPrefix.substring(0, envKeyWithoutPrefix.indexOf("_"));
                     String key = envKeyWithoutPrefix.substring(envKeyWithoutPrefix.indexOf("_") + 1);
-                    String value = env.get(envKey);
+                    String value = (String) systemProperties.get(propertyKeyString);
 
                     String keyWithSection = String.format("%s.%s", section, key);
-                    properties.setProperty(keyWithSection, value);
+                    DexiConfig.properties.setProperty(keyWithSection, value);
                 }
             }
         }
@@ -123,8 +132,7 @@ public class DexiConfig {
         FileBasedConfigurationBuilder<T> builder = new ReloadingFileBasedConfigurationBuilder<>(filedBasedClazz);
 
         URI uri = new URI(fileLocation);
-        String scheme = uri.getScheme();
-        if ("http".equalsIgnoreCase(scheme)) {
+        if (isUrl(fileLocation)) {
             builder = builder.configure(properties.setURL(uri.toURL()));
             configuration = builder.getConfiguration();
         } else {
@@ -153,20 +161,13 @@ public class DexiConfig {
         }
     }
 
-    private static void getConfigurationFromURL() throws MalformedURLException, ConfigurationException, URISyntaxException {
-        String dexiAppConfigUrl = System.getenv(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
-        if (StringUtils.isEmpty(dexiAppConfigUrl)) {
-            dexiAppConfigUrl = System.getProperty(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
-        }
-
-        if (StringUtils.isNotEmpty(dexiAppConfigUrl)) {
-            Configuration ymlConfigurationURL = getConfigurationFile(dexiAppConfigUrl, YAMLConfiguration.class);
-            addConfigurationToProperties(ymlConfigurationURL);
-        }
+    private static void getConfigurationFromURL(String url) throws MalformedURLException, ConfigurationException, URISyntaxException {
+        Configuration ymlConfigurationURL = getConfigurationFile(url, YAMLConfiguration.class);
+        addConfigurationToProperties(ymlConfigurationURL);
     }
 
-    private static void readLocalConfiguration() throws MalformedURLException, ConfigurationException, URISyntaxException {
-        String fileExtension = defaultLocalConfigFile.substring(defaultLocalConfigFile.lastIndexOf(".") + 1);
+    private static void readLocalConfiguration(String fileLocation) throws MalformedURLException, ConfigurationException, URISyntaxException {
+        String fileExtension = fileLocation.substring(fileLocation.lastIndexOf(".") + 1);
 
         Class<? extends FileBasedConfiguration> configurationClass;
         switch (fileExtension) {
@@ -186,14 +187,31 @@ public class DexiConfig {
                 throw new IllegalArgumentException("Unsupported file extension " + fileExtension);
         }
 
-        Configuration ymlConfigurationLocal = getConfigurationFile(defaultLocalConfigFile, configurationClass);
+        Configuration ymlConfigurationLocal = getConfigurationFile(fileLocation, configurationClass);
         addConfigurationToProperties(ymlConfigurationLocal);
     }
 
-    public static void load() throws ConfigurationException, URISyntaxException, MalformedURLException {
-        readLocalConfiguration();
+    private static boolean isUrl(String fileLocation) {
+        final Pattern urlPattern = Pattern.compile("https?://");
+        Matcher urlMatcher = urlPattern.matcher(fileLocation);
+        return urlMatcher.find();
+    }
 
-        getConfigurationFromURL();
+    public static void load() throws ConfigurationException, URISyntaxException, MalformedURLException {
+        String fileLocation = System.getenv(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
+        if (StringUtils.isEmpty(fileLocation)) {
+            fileLocation = System.getProperty(ENVIRONMENT_VARIABLE_DEXI_APP_CREDENTIALS_NAME);
+        }
+
+        if (StringUtils.isNotEmpty(fileLocation)) {
+            if (isUrl(fileLocation)) {
+                getConfigurationFromURL(fileLocation);
+            } else {
+                readLocalConfiguration(fileLocation);
+            }
+        } else {
+            readLocalConfiguration(DEFAULT_CONFIG_FILE);
+        }
 
         readEnvironment();
     }
@@ -202,19 +220,16 @@ public class DexiConfig {
         return properties;
     }
 
-    public static void setLocalConfigFile(String localConfigFile) {
-        DexiConfig.defaultLocalConfigFile = localConfigFile;
-    }
-
     public static String getBaseUrl() {
         return properties.getProperty(CONFIG_KEY_BASE_URL, DEFAULT_BASE_URL);
+    }
+
+    public static String getAccount() {
+        return properties.getProperty(CONFIG_KEY_ACCOUNT);
     }
 
     public static String getApiKey() {
         return properties.getProperty(CONFIG_KEY_API_KEY);
     }
 
-    public static String getAccount() {
-        return properties.getProperty(CONFIG_KEY_ACCOUNT);
-    }
 }
