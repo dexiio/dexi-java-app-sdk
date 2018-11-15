@@ -28,6 +28,7 @@ import java.util.Set;
  *     dexi:
  *       baseUrl: http://localhost:3000/api/
  *       apiKey: super-secret-key
+ *       account: dexi-developer-account
  *  }
  *  </pre>
  *
@@ -37,7 +38,8 @@ import java.util.Set;
  *      {
  *          "dexi": {
  *              "baseUrl": "http://localhost:3000/api/",
- *              "apiKey": "super-secret-key"
+ *              "apiKey": "super-secret-key",
+ *              "account": "dexi-developer-account"
  *          }
  *      }
  *  }
@@ -49,7 +51,7 @@ import java.util.Set;
  *  Configuration is read in the following order:
  *  <ol>
  *      <li>A local configuration file as specified by the {@code defaultLocalConfigFile} parameter. The default is
- *          {@code ~/.dexi/my-app.yml}.
+ *          {@code ~/.dexi/configuration.yml}.
  *          <ul>
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *          </ul>
@@ -68,7 +70,7 @@ public class Config {
 
     private static final String DEXI_APP_ENVIRONMENT_VARIABLE_PREFIX = "DEXI_APP_";
 
-    private static String defaultLocalConfigFile = System.getProperty("user.home") + "/.dexi/my-app.yml";
+    private static String defaultLocalConfigFile = System.getProperty("user.home") + "/.dexi/configuration.yml";
     private static Properties properties = new Properties();
 
     private static void readEnvironment() {
