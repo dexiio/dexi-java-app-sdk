@@ -10,7 +10,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class ConfigTest {
+public class ConfigIT {
 
     @After
     public void clearProperties() {
