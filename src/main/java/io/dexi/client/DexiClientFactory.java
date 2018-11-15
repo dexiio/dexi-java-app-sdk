@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import io.dexi.config.Config;
+import io.dexi.config.DexiConfig;
 import io.dexi.service.DexiPayloadHeaders;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -42,12 +42,12 @@ public class DexiClientFactory {
     protected final String baseUrl;
 
     public DexiClientFactory() {
-        this.baseUrl = Config.getBaseUrl();
-        this.auth = DexiAuth.from(Config.getAccount(), Config.getApiKey());
+        this.baseUrl = DexiConfig.getBaseUrl();
+        this.auth = DexiAuth.from(DexiConfig.getAccount(), DexiConfig.getApiKey());
     }
 
     public DexiClientFactory(DexiAuth auth) {
-        this(Config.getBaseUrl(), auth);
+        this(DexiConfig.getBaseUrl(), auth);
     }
 
     public DexiClientFactory(String baseUrl, DexiAuth auth) {
