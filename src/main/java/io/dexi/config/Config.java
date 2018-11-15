@@ -17,7 +17,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- *  This class supports reading "hierarchical" configuration files like:
+ *  This class supports reading "hierarchical" configuration files with sections like:
  *
  *  <b>YAML example</b>
  *  <code>
@@ -40,18 +40,17 @@ import java.util.Set;
  *
  *  Configuration is read in the following order:
  *  <ol>
- *      <li>If an environment variable or system property named "DEXI_APP_CONFIG_URL_YML" is set, read a YAML (.yml)
- *      file from the specified URL.</li>
  *      <li>On the local disk, read a file named "dexi.&lt;app-name>" placed in "~/.dexi"
  *          <ul>
  *              <li>Supported file formats are YAML (.yml), JSON (.json), XML (.xml) and INI (.ini).</li>
  *          </ul>
  *      </li>
+ *      <li>If an environment variable or system property named "DEXI_APP_CONFIG_URL_YML" is set, read a YAML (.yml)
+ *      file from the specified URL.</li>
  *      <li>Read any "DEXI_APP_" environment variable</li>
  *  </ol>
  *
- *  Configuration is read in the order specified above. Only the last value for a duplicate key within a section is
- *  stored.
+ *  Values for duplicate keys within sections are overwritten by later keys.
  *
  */
 public class Config {
@@ -151,9 +150,9 @@ public class Config {
     }
 
     public static void load(String appName) throws ConfigurationException, URISyntaxException, MalformedURLException {
-        getConfigurationFromURL();
-
         readLocalConfiguration(appName);
+
+        getConfigurationFromURL();
 
         readEnvironment();
     }
