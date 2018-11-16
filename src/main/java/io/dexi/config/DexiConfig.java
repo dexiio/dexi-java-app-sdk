@@ -138,10 +138,10 @@ public class DexiConfig {
             configuration = builder.getConfiguration();
         } else {
             URL localFileURL;
-            if (uri.isAbsolute()) {
-                localFileURL = new URL(uri.toString());
+            if ("classpath".equalsIgnoreCase(uri.getScheme())) {
+                localFileURL = DexiConfig.class.getResource(uri.getPath());
             } else {
-                localFileURL = DexiConfig.class.getResource(fileLocation);
+                localFileURL = uri.toURL();
             }
 
             if (localFileURL != null) {
