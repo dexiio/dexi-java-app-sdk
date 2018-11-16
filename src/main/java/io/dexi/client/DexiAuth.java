@@ -21,13 +21,13 @@ public class DexiAuth {
 
     private final String access;
 
-    public static DexiAuth from(String accountId, String secret) {
-        return new DexiAuth(accountId, secret);
+    public static DexiAuth from(String accountId, String apiKey) {
+        return new DexiAuth(accountId, apiKey);
     }
 
-    public DexiAuth(String accountId, String secret) {
+    public DexiAuth(String accountId, String apiKey) {
         this.accountId = accountId;
-        this.access = calculateAccess(accountId, secret);
+        this.access = calculateAccess(accountId, apiKey);
     }
 
     public String getAccountId() {
@@ -38,11 +38,11 @@ public class DexiAuth {
         return access;
     }
 
-    private static String calculateAccess(String clientId, String secret) {
+    private static String calculateAccess(String clientId, String apiKey) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
 
-            md.update((clientId + secret).getBytes());
+            md.update((clientId + apiKey).getBytes());
 
             return convertByteToHex(md.digest());
 

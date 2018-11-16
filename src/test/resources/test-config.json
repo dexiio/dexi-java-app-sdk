@@ -1,0 +1,10 @@
+{
+  "dexi": {
+    "baseUrl": "http://localhost:3000/api/",
+    "account": "dexi-developer-account",
+    "apiKey": "super-secret-key"
+  },
+  "google": {
+    "baseUrl": "https://www.googleapis.com/storage/v1/"
+  }
+}
