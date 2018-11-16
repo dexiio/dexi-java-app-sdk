@@ -137,7 +137,13 @@ public class DexiConfig {
             builder = builder.configure(properties.setURL(uri.toURL()));
             configuration = builder.getConfiguration();
         } else {
-            URL localFileURL = DexiConfig.class.getResource(fileLocation);
+            URL localFileURL;
+            if (uri.isAbsolute()) {
+                localFileURL = new URL(uri.toString());
+            } else {
+                localFileURL = DexiConfig.class.getResource(fileLocation);
+            }
+
             if (localFileURL != null) {
                 builder = builder.configure(properties.setFileName(localFileURL.getFile()));
                 configuration = builder.getConfiguration();
