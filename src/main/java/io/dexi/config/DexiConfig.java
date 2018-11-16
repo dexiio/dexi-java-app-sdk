@@ -10,6 +10,7 @@ import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParamet
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang.StringUtils;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -137,17 +138,18 @@ public class DexiConfig {
             builder = builder.configure(properties.setURL(uri.toURL()));
             configuration = builder.getConfiguration();
         } else {
-            URL localFileURL;
+            String localFilename = uri.getPath();
             if ("classpath".equalsIgnoreCase(uri.getScheme())) {
-                localFileURL = DexiConfig.class.getResource(uri.getPath());
-            } else {
-                localFileURL = uri.toURL();
+                URL localFileURL = DexiConfig.class.getResource(uri.getPath());
+                localFilename = localFileURL.getFile();
             }
 
-            if (localFileURL != null) {
-                builder = builder.configure(properties.setFileName(localFileURL.getFile()));
+            File localFile = new File(localFilename);
+            if (localFile.exists()) {
+                builder = builder.configure(properties.setFileName(localFile.getAbsolutePath()));
                 configuration = builder.getConfiguration();
             }
+
         }
 
         return configuration;
