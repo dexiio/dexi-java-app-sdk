@@ -97,6 +97,7 @@ public class DexiConfig {
 
     private static String DEFAULT_CONFIG_FILE = System.getProperty("user.home") + "/.dexi/configuration.yml";
     private static Properties properties = new Properties();
+    private static final Pattern urlPattern = Pattern.compile("https?://");
 
     private static void readEnvironment() {
         Properties systemProperties = System.getProperties();
@@ -192,7 +193,6 @@ public class DexiConfig {
     }
 
     private static boolean isUrl(String fileLocation) {
-        final Pattern urlPattern = Pattern.compile("https?://");
         Matcher urlMatcher = urlPattern.matcher(fileLocation);
         return urlMatcher.find();
     }
