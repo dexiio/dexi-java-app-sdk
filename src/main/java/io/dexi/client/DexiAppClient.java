@@ -9,7 +9,6 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 
 public class DexiAppClient {
@@ -23,9 +22,7 @@ public class DexiAppClient {
         this.objectMapper = objectMapper;
     }
 
-
     public <T> T getActivationConfig(String activationId, Class<T> activationConfigType) throws IOException {
-
         final Response<ResponseBody> response = restClient.getActivationConfig(activationId).execute();
 
         if (!response.isSuccessful()) {
@@ -35,12 +32,9 @@ public class DexiAppClient {
         return objectMapper.readValue(response.body().bytes(), activationConfigType);
     }
 
-
     public interface RestClient {
-
         @GET("apps/support/activations/{activationId}/configuration")
         Call<ResponseBody> getActivationConfig(@Path("activationId") String activationId);
     }
-
 
 }

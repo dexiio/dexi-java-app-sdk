@@ -74,7 +74,7 @@ public class DexiClientFactory {
         }
     }
 
-    public  <T> T getActivationConfig(String activationId, Class<T> activationClass) throws DexiClientException {
+    public <T> T getActivationConfig(String activationId, Class<T> activationClass) throws DexiClientException {
         try {
             assert activationId != null && !activationId.isEmpty();
 
