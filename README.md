@@ -173,11 +173,7 @@ X-DexiIO-Activation
 X-DexiIO-Component
 X-DexiIO-Config
 
-Payload:  
-{ 
-    config: Map<String, Object>, 
-    rows: Rows 
-} 
+Payload: Rows
 
 Output: Data according the output schema (or nothing of no output schema defined)
 
