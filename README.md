@@ -165,7 +165,7 @@ Output: Schema (See class)
 ```
 
 #### Component: Data Storage Endpoint
-Invocation request made specificly for the ```data-storage``` component type
+Invocation request made specifically for the ```data-storage``` component type
 
 ```
 Headers: 
@@ -175,12 +175,12 @@ X-DexiIO-Config
 
 Payload: Rows
 
-Output: Data according the output schema (or nothing of no output schema defined)
+Output: Data according the output schema (or nothing if no output schema defined)
 
 ```
 
 #### Component: Data Source Endpoint
-Invocation request made specificly for the ```data-source``` component type
+Invocation request made specifically for the ```data-source``` component type
 
 ```
 Headers: 
@@ -191,12 +191,12 @@ X-DexiIO-Config
 Payload: Map<String, Object>  
 The configuration values of the component
 
-Output: Data according the output schema (or nothing of no output schema defined)
+Output: Data according the output schema (or nothing if no output schema defined)
 
 ```
 
 #### Component: Data Filter Endpoint
-Invocation request made specificly for the ```data-filter``` component type
+Invocation request made specifically for the ```data-filter``` component type
 
 ```
 Headers: 
@@ -207,12 +207,12 @@ X-DexiIO-Config
 Payload: Map<String, Object>  
 The configuration values of the component
 
-Output: Data according the output schema (or nothing of no output schema defined)
+Output: Data according the output schema (or nothing if no output schema defined)
 
 ```
 
 #### Component: File Storage Endpoint
-Invocation request made specificly for the ```file-storage``` component type
+Invocation request made specifically for the ```file-storage``` component type
 
 ```
 Headers: 
@@ -222,14 +222,14 @@ X-DexiIO-Config
 Content-Type
 
 Payload: Stream
-The raw contents of the file will be streamed directly to the endpoint. Use X-DexiIO-Config to get configuration (See helper method: DexiClientFactory::getConfiguration) 
+The raw contents of the file will be streamed directly to the endpoint 
 
 Output: Nothing
 
 ```
 
 #### Component: File Source Endpoint
-Invocation request made specificly for the ```file-source``` component type
+Invocation request made specifically for the ```file-source``` component type
 
 ```
 Headers: 
