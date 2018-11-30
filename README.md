@@ -125,6 +125,7 @@ Headers:
 X-DexiIO-Activation
 X-DexiIO-Component
 
+
 Payload: Map<String, Object>
 The configuration values of the component
 
@@ -188,7 +189,7 @@ X-DexiIO-Activation
 X-DexiIO-Component
 X-DexiIO-Config
 
-Payload: Map<String, Object>  
+Payload: Nothing  
 The configuration values of the component
 
 Output: Data according the output schema (or nothing if no output schema defined)
@@ -204,7 +205,7 @@ X-DexiIO-Activation
 X-DexiIO-Component
 X-DexiIO-Config
 
-Payload: Map<String, Object>  
+Payload: Rows
 The configuration values of the component
 
 Output: Data according the output schema (or nothing if no output schema defined)
@@ -237,7 +238,7 @@ X-DexiIO-Activation
 X-DexiIO-Component
 X-DexiIO-Config
 
-Payload: Map<String, Object>  
+Payload: Nothing  
 The configuration values of the component
 
 Output: Stream
