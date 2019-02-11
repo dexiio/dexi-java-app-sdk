@@ -52,7 +52,7 @@ All Dexi-specific headers are available as constants in ```DexiAuth.HEADER_*``` 
 
 ```
 X-DexiIO-Activation : Activation ID for the request
-X-DexiIO-Component  : App Component ID for the request
+X-DexiIO-Component  : App Component name for the request
 X-DexiIO-Config     : Component configuration serialized to JSON 
 ```
 
