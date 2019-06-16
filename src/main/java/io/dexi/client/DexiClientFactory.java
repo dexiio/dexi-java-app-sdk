@@ -10,6 +10,8 @@ import io.dexi.config.DexiConfig;
 import io.dexi.service.DexiPayloadHeaders;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
@@ -17,7 +19,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+
 public class DexiClientFactory {
+    private static final Logger log = LoggerFactory.getLogger(DexiClientFactory.class);
 
     /**
      * Tell dexi that we're behaving as an app
@@ -42,7 +46,7 @@ public class DexiClientFactory {
     protected final String baseUrl;
 
     public DexiClientFactory() {
-        this.baseUrl = DexiConfig.getBaseUrl();
+        this.baseUrl = safeBaseUrl(DexiConfig.getBaseUrl());
         this.auth = DexiAuth.from(DexiConfig.getAccount(), DexiConfig.getApiKey());
     }
 
@@ -51,10 +55,18 @@ public class DexiClientFactory {
     }
 
     public DexiClientFactory(String baseUrl, DexiAuth auth) {
-        this.baseUrl = baseUrl;
+        this.baseUrl = safeBaseUrl(baseUrl);
         this.auth = auth;
 
         setupObjectMapper();
+    }
+
+    private String safeBaseUrl(String baseUrl) {
+        if (!baseUrl.endsWith("/")) {
+            return baseUrl + "/";
+        }
+
+        return baseUrl;
     }
 
     protected void setupObjectMapper() {
@@ -70,6 +82,7 @@ public class DexiClientFactory {
         try {
             return clientCache.get(activationId, () -> new DexiClient(activationId));
         } catch (ExecutionException e) {
+            log.error("Failed to instantiate dexi client", e);
             throw new RuntimeException("Failed to instantiate dexi client", e);
         }
     }
