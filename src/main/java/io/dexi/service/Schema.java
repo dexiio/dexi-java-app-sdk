@@ -34,6 +34,25 @@ public class Schema extends HashMap<String, Schema.Field> {
 
         private JsonNode configuration;
 
+        private Schema properties;
+
+        private Field items;
+
+        public Schema getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Schema properties) {
+            this.properties = properties;
+        }
+
+        public Field getItems() {
+            return items;
+        }
+
+        public void setItems(Field items) {
+            this.items = items;
+        }
 
         public String getTitle() {
             return title;
