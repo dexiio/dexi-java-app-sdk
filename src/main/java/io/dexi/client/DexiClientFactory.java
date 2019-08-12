@@ -101,6 +101,7 @@ public class DexiClientFactory {
 
             return activationConfig;
         } catch (Exception e) {
+            log.warn("Failed to get app activation", e);
             throw new DexiClientException("Could not get configuration for app activation", e);
         }
     }
