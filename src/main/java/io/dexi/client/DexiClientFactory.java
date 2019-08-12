@@ -4,6 +4,7 @@ package io.dexi.client;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import io.dexi.config.DexiConfig;
@@ -91,15 +92,11 @@ public class DexiClientFactory {
         try {
             assert activationId != null && !activationId.isEmpty();
 
-            final T activationConfig = (T) activationConfigCache.get(activationId,
-                () -> create(activationId).apps().getActivationConfig(activationId, activationClass)
+            final Optional<T> activationConfig = (Optional<T>) activationConfigCache.get(activationId,
+                () -> Optional.fromNullable(create(activationId).apps().getActivationConfig(activationId, activationClass))
             );
 
-            if (activationConfig == null) {
-                return null;
-            }
-
-            return activationConfig;
+            return activationConfig.orNull();
         } catch (Exception e) {
             log.warn("Failed to get app activation", e);
             throw new DexiClientException("Could not get configuration for app activation", e);
