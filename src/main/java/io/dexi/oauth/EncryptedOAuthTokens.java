@@ -11,6 +11,10 @@ public class EncryptedOAuthTokens {
 
     private boolean valid;
 
+    private String scope;
+
+    private Long expiresInSeconds;
+
     public EncryptedOAuthTokens() {
     }
 
@@ -59,5 +63,21 @@ public class EncryptedOAuthTokens {
 
     public void setValid(boolean valid) {
         this.valid = valid;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    public Long getExpiresInSeconds() {
+        return expiresInSeconds;
+    }
+
+    public void setExpiresInSeconds(Long expiresInSeconds) {
+        this.expiresInSeconds = expiresInSeconds;
     }
 }

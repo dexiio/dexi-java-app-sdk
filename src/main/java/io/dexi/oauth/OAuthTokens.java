@@ -11,6 +11,10 @@ public class OAuthTokens {
 
     private String refreshToken;
 
+    private String scope;
+
+    private Long expiresInSeconds;
+
     private boolean valid;
 
 
@@ -21,6 +25,8 @@ public class OAuthTokens {
         this.name = tokens.getName();
         this.email = tokens.getEmail();
         this.provider = tokens.getProvider();
+        this.scope = tokens.getScope();
+        this.expiresInSeconds = tokens.getExpiresInSeconds();
         this.valid = tokens.isValid();
     }
 
@@ -62,6 +68,22 @@ public class OAuthTokens {
 
     public void setRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public Long getExpiresInSeconds() {
+        return expiresInSeconds;
+    }
+
+    public void setExpiresInSeconds(Long expiresInSeconds) {
+        this.expiresInSeconds = expiresInSeconds;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 
     public boolean isValid() {
