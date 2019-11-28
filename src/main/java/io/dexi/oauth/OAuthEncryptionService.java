@@ -19,6 +19,9 @@ public class OAuthEncryptionService {
     private final Cipher decryptCipher;
 
     public OAuthEncryptionService(String encryptionKey) {
+        if (StringUtils.isBlank(encryptionKey)) {
+            throw new IllegalArgumentException("Encryption key is required for the encryption service to work");
+        }
         this.encryptionKey = encryptionKey;
 
         this.checkKey();
