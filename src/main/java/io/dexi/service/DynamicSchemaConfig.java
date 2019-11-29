@@ -3,7 +3,7 @@ package io.dexi.service;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class DynamicSchemaPayload<T> {
+public class DynamicSchemaConfig<T> {
 
     private T options;
 
