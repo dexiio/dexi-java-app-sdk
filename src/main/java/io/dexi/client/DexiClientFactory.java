@@ -141,13 +141,18 @@ public class DexiClientFactory {
         /**
          * Client for downloading files from dexi
          *
-         * @return
+         * @return the client
          */
         public DexiFileClient files() {
             return fileClient;
         }
 
 
+        /**
+         * Client for getting information about apps and activations
+         *
+         * @return the client
+         */
         public DexiAppClient apps() {
             return appClient;
         }

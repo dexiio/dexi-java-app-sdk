@@ -1,23 +1,35 @@
 package io.dexi.service;
 
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
+/**
+ * The payload received for dynamic schema requests.
+ *
+ * @param <T> The component configuration class
+ */
 public class DynamicSchemaConfig<T> {
 
+    /**
+     * The component configuration.
+     */
     private T options;
 
-    private ObjectNode inputs;
+    /**
+     * Input connections connected to the component. Can be used to deduce things based on the incoming data types
+     * such as the resulting output.
+     *
+     * Can be ignored if you do not need to deduce information based on the input connections - and might not always
+     * be provided.
+     *
+     * Note that this can be null
+     */
+    private Schema inputConnectionSchema;
 
     public T getOptions() {
         return options;
     }
 
-    public ObjectNode getInputs() {
-        return inputs;
-    }
-
-    public void setInputs(ObjectNode inputs) {
-        this.inputs = inputs;
+    public Schema getInputConnectionSchema() {
+        return inputConnectionSchema;
     }
 }
