@@ -163,7 +163,7 @@ public class DexiConfig {
 
                 String existingValue = properties.getProperty(keyWithSection);
                 if (existingValue == null) {
-                    String value = configuration.getString(keyWithSection);
+                    Object value = configuration.getProperty(keyWithSection);
                     properties.put(keyWithSection, value);
                 }
             }
