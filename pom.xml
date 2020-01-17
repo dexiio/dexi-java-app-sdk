@@ -6,7 +6,7 @@
 
     <groupId>io.dexi</groupId>
     <artifactId>dexi-java-app-sdk</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
 
     <properties>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

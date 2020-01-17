@@ -16,10 +16,21 @@ import java.io.InputStream;
 public class StreamingRequestBody extends RequestBody {
     private final InputStream inputStream;
     private final MediaType contentType;
+    private final long contentLength;
 
     public StreamingRequestBody(MediaType contentType, InputStream inputStream) {
+        this(contentType, inputStream, -1);
+    }
+
+    public StreamingRequestBody(MediaType contentType, InputStream inputStream, long contentLength) {
         this.contentType = contentType;
         this.inputStream = inputStream;
+        this.contentLength = contentLength;
+    }
+
+    @Override
+    public long contentLength() throws IOException {
+        return contentLength;
     }
 
     @Override
