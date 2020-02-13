@@ -54,7 +54,7 @@ public class OAuthEncryptionService {
         return new String(doFinal(decryptCipher, bytes), StandardCharsets.UTF_8);
     }
 
-    public EncryptedOAuthTokens encrypt(OAuthTokens tokens) {
+    public EncryptedOAuthTokens encrypt(OAuth2Tokens tokens) {
         EncryptedOAuthTokens out = new EncryptedOAuthTokens(tokens);
 
         String unencryptedPayload = String.format("%s:%s", tokens.getAccessToken(), tokens.getRefreshToken());
@@ -64,8 +64,18 @@ public class OAuthEncryptionService {
         return out;
     }
 
-    public OAuthTokens decrypt(EncryptedOAuthTokens tokens) {
-        OAuthTokens out = new OAuthTokens(tokens);
+    public EncryptedOAuthTokens encrypt(OAuth1Tokens tokens) {
+        EncryptedOAuthTokens out = new EncryptedOAuthTokens(tokens);
+
+        String unencryptedPayload = String.format("%s:%s", tokens.getAccessToken(), tokens.getAccessTokenSecret());
+
+        out.setPayload(encrypt(unencryptedPayload));
+
+        return out;
+    }
+
+    public OAuth2Tokens decrypt(EncryptedOAuthTokens tokens) {
+        OAuth2Tokens out = new OAuth2Tokens(tokens);
 
         if (StringUtils.isNotBlank(tokens.getPayload())) {
             String unencryptedPayload = decrypt(tokens.getPayload());
@@ -75,6 +85,23 @@ public class OAuthEncryptionService {
             if (parts.length == 2) {
                 out.setAccessToken(parts[0]);
                 out.setRefreshToken(parts[1]);
+            }
+        }
+
+        return out;
+    }
+
+    public OAuth1Tokens decryptOAuth1(EncryptedOAuthTokens tokens) {
+        OAuth1Tokens out = new OAuth1Tokens(tokens);
+
+        if (StringUtils.isNotBlank(tokens.getPayload())) {
+            String unencryptedPayload = decrypt(tokens.getPayload());
+
+            String[] parts = unencryptedPayload.split(":");
+
+            if (parts.length == 2) {
+                out.setAccessToken(parts[0]);
+                out.setAccessTokenSecret(parts[1]);
             }
         }
 

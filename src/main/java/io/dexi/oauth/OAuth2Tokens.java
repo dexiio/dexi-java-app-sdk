@@ -1,6 +1,6 @@
 package io.dexi.oauth;
 
-public class OAuthTokens {
+public class OAuth2Tokens {
     private String name;
 
     private String email;
@@ -18,10 +18,10 @@ public class OAuthTokens {
     private boolean valid;
 
 
-    public OAuthTokens() {
+    public OAuth2Tokens() {
     }
 
-    public OAuthTokens(EncryptedOAuthTokens tokens) {
+    public OAuth2Tokens(EncryptedOAuthTokens tokens) {
         this.name = tokens.getName();
         this.email = tokens.getEmail();
         this.provider = tokens.getProvider();

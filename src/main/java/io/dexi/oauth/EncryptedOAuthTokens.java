@@ -18,7 +18,14 @@ public class EncryptedOAuthTokens {
     public EncryptedOAuthTokens() {
     }
 
-    public EncryptedOAuthTokens(OAuthTokens tokens) {
+    public EncryptedOAuthTokens(OAuth2Tokens tokens) {
+        this.name = tokens.getName();
+        this.email = tokens.getEmail();
+        this.provider = tokens.getProvider();
+        this.valid = tokens.isValid();
+    }
+
+    public EncryptedOAuthTokens(OAuth1Tokens tokens) {
         this.name = tokens.getName();
         this.email = tokens.getEmail();
         this.provider = tokens.getProvider();

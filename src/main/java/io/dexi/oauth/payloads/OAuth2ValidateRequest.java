@@ -1,6 +1,6 @@
 package io.dexi.oauth.payloads;
 
-public class OAuthValidateRequest {
+public class OAuth2ValidateRequest {
     private String code;
 
     private String redirectUrl;
