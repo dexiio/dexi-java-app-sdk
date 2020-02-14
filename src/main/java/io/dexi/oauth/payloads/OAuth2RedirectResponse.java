@@ -1,6 +1,6 @@
 package io.dexi.oauth.payloads;
 
-public class OAuthRedirectResponse {
+public class OAuth2RedirectResponse {
     private String url;
 
     public String getUrl() {
