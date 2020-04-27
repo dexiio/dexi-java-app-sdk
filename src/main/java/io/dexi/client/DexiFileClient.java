@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import retrofit2.http.Query;
 
 
 public class DexiFileClient {
@@ -26,7 +27,10 @@ public class DexiFileClient {
 
     private final RestClient restClient;
 
-    DexiFileClient(Retrofit retrofit) {
+    private final String activationId;
+
+    DexiFileClient(String activationId, Retrofit retrofit) {
+        this.activationId = activationId;
         restClient = retrofit.create(RestClient.class);
     }
 
@@ -62,7 +66,7 @@ public class DexiFileClient {
             return null;
         }
 
-        final Response<ResponseBody> response = restClient.getFile(fileId).execute();
+        final Response<ResponseBody> response = restClient.getFile(activationId, fileId).execute();
 
         if (response.isSuccessful()) {
             final ResponseBody responseBody = response.body();
@@ -88,8 +92,8 @@ public class DexiFileClient {
 
     public interface RestClient {
 
-        @GET("files/{fileId}")
-        Call<ResponseBody> getFile(@Path("fileId") String fileId);
+        @GET("apps/support/activations/{activationId}/file")
+        Call<ResponseBody> getFile(@Path("activationId") String activationId, @Query("fileId") String fileId);
     }
 
     public static class FileHandle implements AutoCloseable {

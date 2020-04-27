@@ -21,12 +21,15 @@ public class DexiAppClient {
 
     private final RestClient restClient;
 
-    DexiAppClient(ObjectMapper objectMapper, Retrofit retrofit) {
+    private final String activationId;
+
+    DexiAppClient(String activationId, ObjectMapper objectMapper, Retrofit retrofit) {
+        this.activationId = activationId;
         restClient = retrofit.create(RestClient.class);
         this.objectMapper = objectMapper;
     }
 
-    public <T> T getActivationConfig(String activationId, Class<T> activationConfigType) throws IOException {
+    public <T> T getActivationConfig(Class<T> activationConfigType) throws IOException {
         final Response<ResponseBody> response = restClient.getActivationConfig(activationId).execute();
 
         if (!response.isSuccessful()) {

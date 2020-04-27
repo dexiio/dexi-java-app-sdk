@@ -93,7 +93,7 @@ public class DexiClientFactory {
             assert activationId != null && !activationId.isEmpty();
 
             final Optional<T> activationConfig = (Optional<T>) activationConfigCache.get(activationId,
-                () -> Optional.fromNullable(create(activationId).apps().getActivationConfig(activationId, activationClass))
+                () -> Optional.fromNullable(create(activationId).apps().getActivationConfig(activationClass))
             );
 
             return activationConfig.orNull();
@@ -132,9 +132,9 @@ public class DexiClientFactory {
 
             this.retrofit = buildRetrofit(auth, baseUrl);
 
-            this.fileClient = new DexiFileClient(retrofit);
+            this.fileClient = new DexiFileClient(activationId, retrofit);
 
-            this.appClient = new DexiAppClient(objectMapper, retrofit);
+            this.appClient = new DexiAppClient(activationId, objectMapper, retrofit);
         }
 
 
