@@ -10,14 +10,15 @@ import retrofit2.http.Path;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DexiFileClient {
 
-    private static final Logger log = Logger.getLogger(DexiFileClient.class.getName());
+    private static final Logger log = LoggerFactory.getLogger(DexiFileClient.class.getName());
 
     // Format: FILE:<mimetype>;<size>;<fileId>
     private static final Pattern DEXI_FILE_ID_PATTERN = Pattern.compile("^(FILE:)([^;]*);" +
@@ -50,13 +51,14 @@ public class DexiFileClient {
         try {
             Matcher dexiFileIdMatcher = DEXI_FILE_ID_PATTERN.matcher(value);
             if (!dexiFileIdMatcher.matches()) {
+                log.debug("Invalid file pointer: {}", value);
                 return null;
             }
 
             fileSizeString = dexiFileIdMatcher.group(3);
             fileId = dexiFileIdMatcher.group(4);
         } catch (IllegalStateException e) {
-            log.finer("Failed to parse file pointer: " + e);
+            log.warn("Failed to parse file pointer: {}", value, e);
             return null;
         }
 
@@ -64,11 +66,21 @@ public class DexiFileClient {
 
         if (response.isSuccessful()) {
             final ResponseBody responseBody = response.body();
+            if (responseBody == null) {
+                log.warn("Failed to load file from pointer: {} - Response code: {}. Body was null", value, response.code());
+                return null;
+            }
+
             long fileSize = responseBody.contentLength();
             if (fileSize < 1 && StringUtils.isNotBlank(fileSizeString)) {
                 fileSize = Long.parseLong(fileSizeString);
             }
+
+            log.debug("Successfully read file pointer from: {}, size: {}", value, fileSize);
+
             return new FileHandle(fileId, responseBody.byteStream(), fileSize);
+        } else {
+            log.warn("Failed to load file from pointer: {} - Response code: {}", value, response.code());
         }
 
         return null;
