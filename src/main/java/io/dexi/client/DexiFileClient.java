@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import retrofit2.http.Query;
+import retrofit2.http.Streaming;
 
 
 public class DexiFileClient {
@@ -92,6 +93,7 @@ public class DexiFileClient {
 
     public interface RestClient {
 
+        @Streaming
         @GET("apps/support/activations/{activationId}/file")
         Call<ResponseBody> getFile(@Path("activationId") String activationId, @Query("fileId") String fileId);
     }
