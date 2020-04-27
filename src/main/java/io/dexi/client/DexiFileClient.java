@@ -1,6 +1,7 @@
 package io.dexi.client;
 
 import okhttp3.ResponseBody;
+import org.apache.commons.lang.StringUtils;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -9,11 +10,14 @@ import retrofit2.http.Path;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 public class DexiFileClient {
+
+    private static final Logger log = Logger.getLogger(DexiFileClient.class.getName());
 
     // Format: FILE:<mimetype>;<size>;<fileId>
     private static final Pattern DEXI_FILE_ID_PATTERN = Pattern.compile("^(FILE:)([^;]*);" +
@@ -41,14 +45,30 @@ public class DexiFileClient {
             return null;
         }
 
-        Matcher dexiFileIdMatcher = DEXI_FILE_ID_PATTERN.matcher(value);
-        String fileId = dexiFileIdMatcher.group(4);
+        String fileSizeString;
+        String fileId;
+        try {
+            Matcher dexiFileIdMatcher = DEXI_FILE_ID_PATTERN.matcher(value);
+            if (!dexiFileIdMatcher.matches()) {
+                return null;
+            }
+
+            fileSizeString = dexiFileIdMatcher.group(3);
+            fileId = dexiFileIdMatcher.group(4);
+        } catch (IllegalStateException e) {
+            log.finer("Failed to parse file pointer: " + e);
+            return null;
+        }
 
         final Response<ResponseBody> response = restClient.getFile(fileId).execute();
 
         if (response.isSuccessful()) {
             final ResponseBody responseBody = response.body();
-            return new FileHandle(fileId, responseBody.byteStream(), responseBody.contentLength());
+            long fileSize = responseBody.contentLength();
+            if (fileSize < 1 && StringUtils.isNotBlank(fileSizeString)) {
+                fileSize = Long.parseLong(fileSizeString);
+            }
+            return new FileHandle(fileId, responseBody.byteStream(), fileSize);
         }
 
         return null;
